@@ -42,12 +42,8 @@ row_number() over(partition by
 company , location , industry , total_laid_off , percentage_laid_off , `date` , stage,country , funds_raised_millions) as row_num
 from layoffs_staging;
 
-SET SQL_SAFE_UPDATES = 0;
-
 DELETE FROM layoffs_staging2
 WHERE row_num > 1;
-
-SET SQL_SAFE_UPDATES = 1;
 
 select *
 from layoffs_staging2;
