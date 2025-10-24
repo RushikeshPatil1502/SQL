@@ -1,7 +1,7 @@
-#1. remove duplicates
-#2. standardize data
+#1. Remove duplicates
+#2. Standardize data
 #3. Null or Blank
-#4. remove any col for that staging db best practice
+#4. Remove any col for that staging db best practice
 
 #Create a staging db best practice
 create table layoffs_staging
@@ -14,11 +14,14 @@ from layoffs2;
 select *
 from layoffs_staging;
 
+#This is irrelevant because i removed duplicates using excel but here is how to remove in SQL
 with cte_dup as
-(select * ,
+(
+select * ,
 row_number() over(partition by 
 company , location , industry , total_laid_off , percentage_laid_off , `date` , stage,country , funds_raised_millions) as row_num
-from layoffs_staging)
+from layoffs_staging
+)
 select *
 from cte_dup
 ;
@@ -126,16 +129,13 @@ WHERE `date` LIKE '%-%' AND layoff_date IS NULL;
 update layoffs_staging2
 set `date` = layoff_date;
 
-select *
-from layoffs_staging2;
-
 alter table layoffs_staging2
 drop column layoff_date;
 
 alter table layoffs_staging2
 modify column `date` DATE;
 
-#5.Nulls 
+#5.Fix Nulls 
 #Industry
 select *
 from layoffs_staging2
@@ -161,6 +161,23 @@ and st2.industry is not null;
 
 select *
 from layoffs_staging2;
+
+#4.Removing data - not confident but this data is not worth saving 
+select *
+from layoffs_staging2
+where total_laid_off is null
+and percentage_laid_off is null;
+
+delete
+from layoffs_staging2
+where total_laid_off is null
+and percentage_laid_off is null;
+
+select *
+from layoffs_staging2;
+
+alter table layoffs_staging2
+drop column row_num;
 
 
 
